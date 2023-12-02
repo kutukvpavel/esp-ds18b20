@@ -1,5 +1,6 @@
 #pragma once
 
+#include "esp_err.h"
 #include "onewire_bus.h"
 
 namespace ds18b20
@@ -48,5 +49,5 @@ namespace ds18b20
      *         - ESP_ERR_INVALID_ARG   Invalid argument.
      *         - ESP_ERR_NOT_FOUND     There is no device present on 1-wire bus.
      */
-    esp_err_t ds18b20_set_resolution(onewire_bus_handle_t handle, const uint8_t *rom_number, ds18b20_resolution_t resolution);
+    esp_err_t set_resolution(onewire_bus_handle_t handle, const uint8_t *rom_number, resolution_t resolution);
 }
