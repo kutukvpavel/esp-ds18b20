@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "ds18b20.c"
+    SRCS "ds18b20.cpp"
     INCLUDE_DIRS "."
     REQUIRES onewire_bus
     )

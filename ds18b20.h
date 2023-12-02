@@ -3,6 +3,8 @@
 #include "esp_err.h"
 #include "onewire_bus.h"
 
+#include <inttypes.h>
+
 namespace ds18b20
 {
     typedef enum {
@@ -11,6 +13,8 @@ namespace ds18b20
         RESOLUTION_10B = 0x3F, /*!< 187.5ms convert time */
         RESOLUTION_9B = 0x1F, /*!< 93.75ms convert time */
     } resolution_t;
+
+    uint8_t search(onewire_bus_handle_t handle, uint8_t* rom_id_buffer, uint8_t max_instances);
 
     /**
      * @brief Trigger temperature conversion of DS18B20
