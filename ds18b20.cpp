@@ -29,6 +29,8 @@ namespace ds18b20
 
     uint8_t search(onewire_bus_handle_t handle, onewire_device_address_t* rom_id_buffer, uint8_t max_instances)
     {
+        static_assert(sizeof(onewire_device_address_t) == 8);
+
         // create 1-wire rom search context
         onewire_device_iter_handle_t context_handler;
         ESP_ERROR_CHECK(onewire_new_device_iter(handle, &context_handler));
@@ -56,7 +58,7 @@ namespace ds18b20
         return device_num;
     }
 
-    esp_err_t trigger_temperature_conversion(onewire_bus_handle_t handle, const uint8_t *rom_number)
+    esp_err_t trigger_temperature_conversion(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
 
@@ -68,7 +70,7 @@ namespace ds18b20
         if (rom_number) { // specify rom id
             tx_buffer[0] = ONEWIRE_CMD_MATCH_ROM;
             tx_buffer[9] = DS18B20_CMD_CONVERT_TEMP;
-            memcpy(&tx_buffer[1], rom_number, 8);
+            memcpy(&tx_buffer[1], rom_number, sizeof(onewire_device_address_t));
             tx_buffer_size = 10;
         } else { // skip rom id
             tx_buffer[0] = ONEWIRE_CMD_SKIP_ROM;
@@ -82,7 +84,7 @@ namespace ds18b20
         return ESP_OK;
     }
 
-    esp_err_t get_temperature(onewire_bus_handle_t handle, const uint8_t *rom_number, float *temperature)
+    esp_err_t get_temperature(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, float *temperature)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
         ESP_RETURN_ON_FALSE(temperature, ESP_ERR_INVALID_ARG, TAG, "invalid temperature pointer");
@@ -97,7 +99,7 @@ namespace ds18b20
         if (rom_number) { // specify rom id
             tx_buffer[0] = ONEWIRE_CMD_MATCH_ROM;
             tx_buffer[9] = DS18B20_CMD_READ_SCRATCHPAD;
-            memcpy(&tx_buffer[1], rom_number, 8);
+            memcpy(&tx_buffer[1], rom_number, sizeof(onewire_device_address_t));
             tx_buffer_size = 10;
         } else {
             tx_buffer[0] = ONEWIRE_CMD_SKIP_ROM;
@@ -120,7 +122,7 @@ namespace ds18b20
         return ESP_OK;
     }
 
-    esp_err_t set_resolution(onewire_bus_handle_t handle, const uint8_t *rom_number, resolution_t resolution)
+    esp_err_t set_resolution(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, resolution_t resolution)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
 
@@ -132,7 +134,7 @@ namespace ds18b20
         if (rom_number) { // specify rom id
             tx_buffer[0] = ONEWIRE_CMD_MATCH_ROM;
             tx_buffer[9] = DS18B20_CMD_WRITE_SCRATCHPAD;
-            memcpy(&tx_buffer[1], rom_number, 8);
+            memcpy(&tx_buffer[1], rom_number, sizeof(onewire_device_address_t));
             tx_buffer_size = 10;
         } else {
             tx_buffer[0] = ONEWIRE_CMD_SKIP_ROM;

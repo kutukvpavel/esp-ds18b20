@@ -14,7 +14,7 @@ namespace ds18b20
         RESOLUTION_9B = 0x1F, /*!< 93.75ms convert time */
     } resolution_t;
 
-    uint8_t search(onewire_bus_handle_t handle, uint8_t* rom_id_buffer, uint8_t max_instances);
+    uint8_t search(onewire_bus_handle_t handle, onewire_device_address_t* rom_id_buffer, uint8_t max_instances);
 
     /**
      * @brief Trigger temperature conversion of DS18B20
@@ -26,7 +26,7 @@ namespace ds18b20
      *         - ESP_ERR_INVALID_ARG   Invalid argument.
      *         - ESP_ERR_NOT_FOUND     There is no device present on 1-wire bus.
      */
-    esp_err_t trigger_temperature_conversion(onewire_bus_handle_t handle, const uint8_t *rom_number);
+    esp_err_t trigger_temperature_conversion(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number);
 
     /**
      * @brief Get temperature from DS18B20
@@ -40,7 +40,7 @@ namespace ds18b20
      *         - ESP_ERR_NOT_FOUND     There is no device present on 1-wire bus.
      *         - ESP_ERR_INVALID_CRC   CRC check failed.
      */
-    esp_err_t get_temperature(onewire_bus_handle_t handle, const uint8_t *rom_number, float *temperature);
+    esp_err_t get_temperature(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, float *temperature);
 
     /**
      * @brief Set DS18B20's temperation conversion resolution
@@ -53,5 +53,5 @@ namespace ds18b20
      *         - ESP_ERR_INVALID_ARG   Invalid argument.
      *         - ESP_ERR_NOT_FOUND     There is no device present on 1-wire bus.
      */
-    esp_err_t set_resolution(onewire_bus_handle_t handle, const uint8_t *rom_number, resolution_t resolution);
+    esp_err_t set_resolution(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, resolution_t resolution);
 }
