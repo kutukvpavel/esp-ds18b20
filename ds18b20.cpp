@@ -1,3 +1,25 @@
+/**
+ * @file ds18b20.cpp
+ * @author Kutukov Pavel (kutukovps@my.msu.ru)
+ * @brief A cutdown version of DS18B20 library adapted for ESP32.
+ * @version 1
+ * @date 2023-12-02
+ * 
+ * @copyright This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * 
+ */
+
 #include "ds18b20.h"
 
 #include "esp_check.h"
@@ -27,6 +49,11 @@ namespace ds18b20
         uint8_t crc_value; /*!< crc value of scratchpad data */
     } scratchpad_t;
 
+    /// @brief Search 1-Wire bus for devices.
+    /// @param handle OneWire bus handle
+    /// @param rom_id_buffer Pointer to the buffer for writing ROM IDs
+    /// @param max_instances Maximum number devices to look for
+    /// @return Actual number of devices found
     uint8_t search(onewire_bus_handle_t handle, onewire_device_address_t* rom_id_buffer, uint8_t max_instances)
     {
         static_assert(sizeof(onewire_device_address_t) == 8);
@@ -58,6 +85,10 @@ namespace ds18b20
         return device_num;
     }
 
+    /// @brief Trigger DS18B20 temperature conversion
+    /// @param handle OneWire bus handle
+    /// @param rom_number Device ROM ID (or NULL to broadcast)
+    /// @return ESP_OK if succeeded, ESP_ERR_INVALID_ARG if handle is NULL, otherwise see onewire_bus_reset and onewire_bus_write_bytes
     esp_err_t trigger_temperature_conversion(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
@@ -84,6 +115,12 @@ namespace ds18b20
         return ESP_OK;
     }
 
+    /// @brief Read DS18B20 temperature conversion result
+    /// @param handle OneWire bus handle
+    /// @param rom_number Device ROM ID (or NULL to SKIP ROM, suitable for single device bus)
+    /// @param temperature Temperature output buffer
+    /// @return ESP_OK if succeeded, ESP_ERR_INVALID_ARG if handle or temperature output buffer is null,
+    /// ESP_ERR_INVALID_CRC if CRC doesn't match, otherwise see onewire_bus_reset, onewire_bus_write_bytes, onewire_bus_read_bytes
     esp_err_t get_temperature(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, float *temperature)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
@@ -122,6 +159,11 @@ namespace ds18b20
         return ESP_OK;
     }
 
+    /// @brief Set DS18B20 temperature conversion resolution
+    /// @param handle OneWire bus handle
+    /// @param rom_number Device ROM ID (or NULL to broadcast)
+    /// @param resolution Resolution
+    /// @return ESP_OK if succeeded, ESP_ERR_INVALID_ARG if handle is NULL, otherwise see onewire_bus_reset and onewire_bus_write_bytes
     esp_err_t set_resolution(onewire_bus_handle_t handle, const onewire_device_address_t* rom_number, resolution_t resolution)
     {
         ESP_RETURN_ON_FALSE(handle, ESP_ERR_INVALID_ARG, TAG, "invalid 1-wire handle");
